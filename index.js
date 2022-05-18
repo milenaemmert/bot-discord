@@ -21,7 +21,6 @@ client.on("message", (msg) => {
 
     let dataMessage = person(userName, idUser, messageContent, timeStamp);
     console.log('>>> log message: ', dataMessage);
-    console.log('Mensagem: ', msg);
 });
 
 
