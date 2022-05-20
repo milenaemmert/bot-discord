@@ -5,52 +5,40 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 
 const TOKEN = process.env.TOKEN;
 
+
 var idMessage = '';
+var arrayComentarios = [];
 
 client.on("ready", () => {
     console.log(`🤖 ${client.user.tag} It's online`);
 });
 
 client.on("messageCreate", (msg) => {
-    var userName = msg.member.user.username;
     var idUser = msg.author.id;
-    var messageContent = msg.content;
-    var timeStamp = msg.createdTimestamp;
-
-    if (isAuthorizedPerson(idUser) && commandForTrackMessage(messageContent)) {
-        let dataMessage = person(userName, idUser, messageContent, timeStamp);
-        // console.log('>>> log message: ', dataMessage);
-        //msg.reply('Mensagem recebida RUI!!!');
-        // console.log('>>> idMessage ', idMessage);
+    let message_dividida = msg.content.split(" ");
+    //Verificando se é o comando para rastrear uma mensagem e se é por uma pessoa autorizada
+    if ( isTrackCommand(message_dividida[0]) && isAuthorizedPerson(idUser)) {
+        msg.reply("Enquete sendo analisada XD");
+        idMessage = message_dividida[1];
+        console.log('Id da mensagem rastreada: ', idMessage);
     }
 
-});
-
-client.on("messageUpdate", (msg) => {
-    console.log("mensagem atualizada");
 });
 
 client.on("messageReactionAdd", (msg) => {
     let idMessageFromDiscord = msg.message.id;
     if (idMessageFromDiscord == idMessage){
-        console.log('>>> id da mensagem correta está sendo rastreada');
-        console.log('>>> id da mensagem reagida: ', idMessageFromDiscord);
+        console.log('\n\n');
+        // console.log('>>> id da mensagem correta está sendo rastreada');
+        // console.log('>>> id da mensagem reagida: ', idMessageFromDiscord);
         console.log("reação");
-        console.log(">>> msg: ", msg);
+        console.log(">>> msg: reactions ", msg.toJSON());
+        // console.log(">>> msg: reactions ", msg.emoji.toString());
+        // console.log('>>> users: ', msg.users);
+        console.log('>>> msg', msg);
     }
+
 });
-
-function formattedDate  (timeStamp)  {
-    var date = new Date(timeStamp);
-    let fullDate = date.getDate()+
-    "/"+(date.getMonth()+1)+
-    "/"+date.getFullYear()+
-    " "+date.getHours()+
-    ":"+date.getMinutes()+
-    ":"+date.getSeconds();
-
-    return fullDate;
-}
 
 function person  (userName, idUser, messageContent, timeStamp) {
     const date = formattedDate(timeStamp);
@@ -65,22 +53,25 @@ function person  (userName, idUser, messageContent, timeStamp) {
     return logUser;
 }
 
+function formattedDate  (timeStamp)  {
+    var date = new Date(timeStamp);
+    let fullDate = date.getDate()+
+    "/"+(date.getMonth()+1)+
+    "/"+date.getFullYear()+
+    " "+date.getHours()+
+    ":"+date.getMinutes()+
+    ":"+date.getSeconds();
+
+    return fullDate;
+}
+
 function isAuthorizedPerson (id) {
     return id === '486988988788375572';
+    // return id === '863845718837166170';
 }
 
-function commandForTrackMessage (command) {
-    command = splitMessage(command);
-    if (command[0] !== '!track') {
-        return false;
-    }
-    idMessage = command[1];
-    console.log('>>> IdMessage', idMessage);
-    return true;
-}
-
-function splitMessage (message) {
-    return message.split(' ');
+function isTrackCommand(command) {
+    return command === '!track'
 }
 
 client.login(TOKEN);
